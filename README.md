@@ -9,6 +9,10 @@ NB: I was able to run this successfully as a downloaded package in a cloned repo
 https://pypi.python.org/pypi/virtualenv
 https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world
 
+Required packages:
+flask
+numpy
+flask_sqlalchemy
 
 Supported endpoints:
   Adventure begins!:
