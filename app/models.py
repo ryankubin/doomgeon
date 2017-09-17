@@ -5,6 +5,11 @@ from app import db
 from app import app, mapFunctions
 from sqlalchemy.orm import relationship
 
+'''
+    Portions of both the DungeonMap and DungeonRoom classes were adapted from examples found here w/r Undirected graphs:
+    https://pythonandr.com/2016/07/28/implementing-undirected-graphs-in-python/
+'''
+
 # Represents the adventurer exploring the dungeon.  
 class Player(db.Model):
     __table_args__ = {'extend_existing': True }
