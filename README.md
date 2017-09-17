@@ -3,7 +3,12 @@ The latest craze in GaaS (Gaming as a Service)
 
 Explore a new map with every character, of variable size and dangers, as well as rewards!
 
-Available locally right out of the bag, simply download this repository to your environment, navigate to the doomgeon directory, and enter in the following command: flask\Scripts\python run.py (windows only).  For mac/linux, you should be able to simply use run.py, but YMMV.
+Available locally, in order to run this make sure you have python3 installed.  Download this repository to your environment, navigate to the doomgeon directory, and enter in the following command: flask\Scripts\python run.py (windows only).  For mac/linux, you should be able to simply use run.py, but YMMV.
+
+NB: I was able to run this successfully as a downloaded package in a cloned repo on my original system, but have issues with python on my secondary.  If there are issues around starting it up, please refer to these references (they were used exclusively in setting up the original environment):
+https://pypi.python.org/pypi/virtualenv
+https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world
+
 
 Supported endpoints:
   Adventure begins!:
