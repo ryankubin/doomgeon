@@ -1,0 +1,74 @@
+quest start view:
+
+Expect 500
+curl -i -H "Content-Type: application/json" -X POST  http://127.0.0.1:5000/quest/start
+
+Expect 400
+curl -i -X POST  http://127.0.0.1:5000/quest/start
+
+Expect 422
+curl -i -H "Content-Type: application/json" -X POST -d '{
+        "playersss": {
+            "namezzz": "Sir Foo, of Bar"
+        }
+    }' http://127.0.0.1:5000/quest/start
+
+Run 2x, Expect 422 on second
+curl -i -H "Content-Type: application/json" -X POST -d '{
+        "player": {
+            "name": "ryan"
+        }
+    }' http://127.0.0.1:5000/quest/start
+
+ Expect 201
+ curl -i -H "Content-Type: application/json" -X POST -d '{
+        "player": {
+            "name": "ryan"
+        }
+    }' http://127.0.0.1:5000/quest/start
+    
+    
+
+quest end testing:
+
+should 400
+curl -i -X DELETE http://127.0.0.1:5000/quest/end
+
+
+should 404
+
+curl -i -H "Content-Type: application/json" -X DELETE -d '{
+        "player": {
+            "name": "ryanish15"
+        }
+    }' http://127.0.0.1:5000/quest/end
+
+should 204
+
+curl -i -H "Content-Type: application/json" -X DELETE -d '{
+        "player": {
+            "name": "ryan"
+        }
+    }' http://127.0.0.1:5000/quest/end
+    
+    
+player status view:
+
+Expect 404:
+curl -X GET http://127.0.0.1:5000/player/status/notryan
+
+Expect 200
+curl -X GET http://127.0.0.1:5000/player/status/ryan
+
+
+
+player move testing
+
+Expect 400
+curl -i -H "Content-Type: application/json" -X GET -d '{"player": {"name": "ryan"}}' http://127.0.0.1:5000/player/move/string
+
+Expect 422
+curl -i -H "Content-Type: application/json" -X GET -d '{"player": {"name": "ryan"}}' http://127.0.0.1:5000/player/move/1000
+
+Expect 200
+curl -i -H "Content-Type: application/json" -X GET -d '{"player": {"name": "ryanish23"}}' http://127.0.0.1:5000/player/move/151

@@ -19,7 +19,8 @@ def start_quest():
         if not request.is_json:
             return make_response(jsonify({'error': 'Unable to decode JSON'}), 400)
         data = request.get_json()
-
+        
+        # Check to see if player data json is formatted properly
         try:
             playerName = data['player']['name']
             player = Player.query.filter_by(name=playerName).first()
@@ -29,14 +30,18 @@ def start_quest():
         # Check to see if quest already exists for player.  If so, return 422 error
         if player and player.getDungeon():
             return make_response(jsonify({'error': 'This adventurer has already begun his quest!'}), 422)
+        
+        # Create a new player if one does not exist
         if not player:
-            # Create a brave adventurer
             player = Player(name=playerName)
             db.session.add(player)
             db.session.commit()
+        # Create the dungeon; if there are issues, raise a 500 error
         if not player.createDungeon(floor = 1):
             abort(500)
         cRoom = DungeonRoom.query.filter_by(id=player.currentRoom).first()
+        
+        # Create API response
         message = 'You enter the dimly lit dungeon through the entrance of the {0}'.format(cRoom.name)
         return make_response(jsonify({'message': message, 'player': player.getStatus()}), 201)    
     except:
@@ -54,7 +59,7 @@ Sample request:
 '''
 @app.route('/quest/end', methods=['DELETE'])
 def end_quest():
-    #try:
+    try:
         # Check to see if request has been sent with json parameters.  If not, return 400 error
         if not request.is_json:
             return make_response(jsonify({'error': 'Unable to decode JSON'}), 400)
@@ -66,8 +71,8 @@ def end_quest():
             return make_response(jsonify(player.deleteDungeon()), 204)
         except:
             return make_response(jsonify({'error': 'Provided parameters are incorrect.  Please supply a valid player_name'}), 404)
-    #except:
-        #abort(500)
+    except:
+        abort(500)
 
 '''
 Change Rooms.  Triggers movement of player to any adjacent room
@@ -81,12 +86,13 @@ Change Rooms.  Triggers movement of player to any adjacent room
 '''
 @app.route('/player/move/<room_id>', methods=['GET'])
 def move_rooms(room_id):
+    # Check to see if room id is an integer
     try:
         room_id = int(room_id)
     except:
         return make_response(jsonify({'error': 'Provided parameters are incorrect.  Please room_id must be an integer'}), 400)
     try:
-        # Check to see if room id is an integer and if request has been sent with json parameters.  If not, return 400 error
+        # Check if request has been sent with json parameters.  If not, return 400 error
         if not request.is_json:
             return make_response(jsonify({'error': 'Provided parameters are incorrect.  Please provide both room_id and player_name'}), 400)
         data = request.get_json()
@@ -104,13 +110,15 @@ def move_rooms(room_id):
         potentialRoom = DungeonRoom.query.filter_by(id=room_id).first()
         if potentialRoom in currentRoom.getNeighbors():
             player.currentRoom = potentialRoom.id
+            # If the room does not yet have an event, create a new one for it
             if not potentialRoom.events.all():
                 eventDetails = mapFunctions.getEventType(potentialRoom)
                 newEvent = DungeonEvent(location=potentialRoom, lair = potentialRoom.lair, type = eventDetails[0], details = eventDetails[1])
                 db.session.add(newEvent)
             db.session.add(player)
             db.session.commit()
-                    
+            
+            # Create API response        
             return make_response(jsonify({"event":newEvent.details, "message":"You are now in the {0}".format(potentialRoom.name), "player": player.getStatus()}), 200)            
         else:
             return make_response(jsonify({"message": "There is no path in that direction. Choose another path.", "player": player.getStatus()}), 422)
@@ -125,7 +133,7 @@ Get player status.  This includes current room, adjacent rooms, floor number, an
 @app.route('/player/status/<player_name>', methods=['GET'])
 def player_status(player_name):
     try:
-        # Check to see if that player exists
+        # Check to see if player exists
         player = Player.query.filter_by(name=player_name).first()
        
         if player:
@@ -134,6 +142,7 @@ def player_status(player_name):
             if not map:
                 return make_response(jsonify({'error': 'Provided player has not yet begun his journey','player_name':player_name}), 404)        
             
+            # Create API response
             return jsonify(player.getStatus())            
         else:
             return make_response(jsonify({'error': 'Provided player name not found','player_name':player_name}), 404)

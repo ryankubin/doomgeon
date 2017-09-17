@@ -2,6 +2,7 @@ from app import app, models
 import random
 from numpy.random import choice
 
+# Get a randomly generated room name, which is unique for that dungeon
 def getRoomName(map):
     possiblePrefixes = ['Cavern', 'Cell', 'Entrance', 'Hall', 'Reliquary', 'Crypt', 'Mauseleum', 'Sanctum', 'Temple', 'Cave', 'Forest', 'Glade', 'Lair', 'Chamber']    
     possibleSuffixes = ['Despair', 'Cacophany', 'Terror', 'Sanguination', 'Malice', 'Horror', 'Goosebumps', 'that reminds you of that one ex', 'Insanity', 'Existential Terror', 'the Mad', 'Unimaginable Creatures', 'Silence', 'Uncomfortable Silences']
@@ -12,7 +13,8 @@ def getRoomName(map):
         if not models.DungeonRoom.query.filter_by(lair=map, name=possibleName).first():
             unique = True
     return possibleName
-                
+
+# Get a randomly generated event; will check to see if stairs have been created for that map, and adjust weightings upwards until they have                
 def getEventType(room):
     possibleEvents = ['maiden', 'monster', 'stairs', 'treasure']
     eventDetails = {"monster":['Hydra', 'Manticore', 'Demon Bats', 'Furry Trouble'],
